@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Farming System</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Live Sensor Data</h2>
+    <p><strong>Temperature:</strong> {{ latest_sensor_data.temperature }} °C</p>
+    <p><strong>Humidity:</strong> {{ latest_sensor_data.humidity }} %</p>
+
+    <canvas id="sensorChart"></canvas>
+    <script>
+        const ctx = document.getElementById('sensorChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ timestamps|tojson }},
+                datasets: [
+                    {
+                        label: 'Temperature (°C)',
+                        data: {{ temperatures|tojson }},
+                        borderColor: 'red',
+                        fill: false
+                    },
+                    {
+                        label: 'Humidity (%)',
+                        data: {{ humidities|tojson }},
+                        borderColor: 'blue',
+                        fill: false
+                    }
+                ]
+            }
+        });
+    </script>
+
+    <h2>Input Form</h2>
+    <form method="POST">
+        Plant: <input type="text" name="plant_name"><br>
+        N: <input type="number" step="0.1" name="n"><br>
+        P: <input type="number" step="0.1" name="p"><br>
+        K: <input type="number" step="0.1" name="k"><br>
+        Motor Type: <input type="text" name="motor_type"><br>
+        Area: <input type="number" step="0.1" name="area_value"> 
+        <select name="area_unit">
+            <option value="sqft">sqft</option>
+            <option value="sqm">sqm</option>
+        </select><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if result %}
+    <h2>Prediction Result</h2>
+    <p><strong>Fertilizer Recommendation:</strong> {{ result.recommended_fertilizer }}</p>
+    <p><strong>Irrigation Required:</strong> {{ result.predicted_irrigation }}%</p>
+    {% endif %}
+</body>
+</html>
